@@ -85,7 +85,7 @@ def find_user(session: Session, platform: int,
             result = session.query(User).\
                              filter(User.taoba_id == user_id).one()
         if result.qq_id is None:
-            if nickname != '' and result.nickname != nickname:
+            if nickname and result.nickname != nickname:
                 logger.debug('用户%s的昵称变为%s', result.nickname, nickname)
                 result.nickname = nickname
                 session.flush()
@@ -117,9 +117,9 @@ def draw_card(session: Session, order: Order) -> str:
     rand = abs(random.normalvariate(0, math.sqrt(divend)))
     if divend > 25:
         rand += math.log2(divend/25)
-    if rand > 1 and rand <= 2.5:
+    if 1 < rand <= 2.5:
         rand = 1
-    if rand > 2.5 and rand <= 5:
+    elif 2.5 < rand <= 5:
         rand = 2
     elif rand > 5:
         rand = 3
@@ -179,7 +179,7 @@ def check_new_order(session: Session, force: bool = False) -> List[str]:
             if not force:
                 logger.info('项目%s未发生更新', project.title)
                 continue
-        session.commit()
+        session.flush()
         order_list = project.get_new_orders(session, search_all=force)
         rank_query = session.query(Rank).\
             filter(Rank.platform == project.platform).\
@@ -190,7 +190,7 @@ def check_new_order(session: Session, force: bool = False) -> List[str]:
             try:
                 rank = rank_query.filter(Rank.user_id == order.user_id).one()
                 rank.amount += order.amount
-                session.commit()
+                session.flush()
             # 没有找到排名信息
             except NoResultFound:
                 rank = Rank(

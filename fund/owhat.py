@@ -108,7 +108,7 @@ class OwhatProject(Project):
         response = send_request('shop.goods', 'findrankingbygoodsid', data)
         if response['result'] != 'success':
             return
-        rank_list = []
+        rank_list = list()
         cleared = False
         pages = 1
         while not cleared:

@@ -87,7 +87,7 @@ pattern = 感谢{nickname}在项目{title}中集资{amount}元，共{user_amount
 # 抽卡阈值, 若为0则表示关闭抽卡功能
 threshold = 4.33
 # 不同稀有度卡牌的名称
-rarity = 普通,精良,珍贵,稀有,史诗,传说
+rarity = 普通,精良,史诗,传说
 # 播报抽卡信息的模版，如果有有关其他信息的需求，请自行更改fund/__init__.py
 # nickname: 用户的昵称
 # rarity: 卡牌的稀有度

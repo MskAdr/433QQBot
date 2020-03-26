@@ -69,7 +69,7 @@ class ModianProject(Project):
                            'Version/13.0.5 Safari/605.1.15'),
         }
         response = requests.get(url, headers=header).text
-        response = response[41: -3]
+        response = response[41:-3]
         profile = json.loads(response)
         backer_money = str(profile['backer_money'])
         backer_money = backer_money.replace(',', '')
@@ -78,7 +78,7 @@ class ModianProject(Project):
         other_info = json.dumps({
             'moxi_pid': int(profile['moxi_post_id']),
             'pro_class': int(profile['pro_class'])
-        }, ensure_ascii=False)
+        })
         # 更新数据
         self.title = profile['name']
         self.start_time = int(time.mktime(start_time))
@@ -116,11 +116,10 @@ class ModianProject(Project):
         }
         response = requests.get(url, headers=header).text
         response = response[40: -2]
-        OrderHTML = json.loads(response)['html']
+        html_data = json.loads(response)['html']
         # 获取HTML数据，准备通过BeautifulSoup处理
-        soup = BeautifulSoup(OrderHTML, 'lxml')
-        ori_comment = soup.find(lambda tag: tag.name == 'ul'
-                                and tag.get('class') == ['comment-lists'])
+        soup = BeautifulSoup(html_data, 'lxml')
+        ori_comment = soup.find(name='ul', class_='comment-lists')
         order_list = list()
         if ori_comment is None:
             return order_list
@@ -151,22 +150,19 @@ class ModianProject(Project):
             signature = hashlib.sha1()
             signature.update(bytes(str(comment_rid), encoding='utf-8'))
             # 插入列表
-            order_list.append(
-                Order(
-                    platform=1,
-                    pro_id=self.pro_id,
-                    user_id=int(user_id),
-                    nickname=nickname,
-                    amount=float(amount_str),
-                    signature=str(signature.hexdigest())
-                )
-            )
+            order_list.append(Order(
+                platform=1,
+                pro_id=self.pro_id,
+                user_id=int(user_id),
+                nickname=nickname,
+                amount=float(amount_str),
+                signature=str(signature.hexdigest())
+            ))
         logger.debug('项目%s评论数据拉取成功，在第%d页共得到%d条评论数据',
                      self.title, page, len(order_list))
-        last_page = True
         if len(order_list) == 10:
-            last_page = False
-        return order_list, last_page
+            return order_list, False
+        return order_list, True
 
     def get_orders(self) -> List[Order]:
         """获取项目当前全部订单列表.
@@ -199,15 +195,15 @@ class ModianProject(Project):
         while not cleared:
             order_page, cleared = self._get_order(page)
             page += 1
-            for thisOrder in order_page:
+            for order in order_page:
                 if session.query(Order).\
-                           filter(Order.signature == thisOrder.signature).\
-                           filter(Order.pro_id == self.pro_id).\
-                           filter(Order.platform == self.platform).\
-                           count() == 0:
-                    session.add(thisOrder)
+                        filter(Order.signature == order.signature).\
+                        filter(Order.pro_id == self.pro_id).\
+                        filter(Order.platform == self.platform).\
+                        count() == 0:
+                    session.add(order)
                     session.flush()
-                    order_list.append(thisOrder)
+                    order_list.append(order)
                 elif not search_all:
                     logger.info('发现项目%s的%d条新的订单数据', self.title,
                                 len(order_list))

@@ -15,15 +15,13 @@ logger = logging.getLogger('QQBot')
 bot = CQHttp(api_root='http://127.0.0.1:5700/')
 sched = BackgroundScheduler()
 engine = create_engine(setting.db_link())
-# 列表中保存的是以及完成初始化的PK项目
+# 列表中保存的是已经完成初始化的PK项目
 pk_mission_started = list()
 # 重复刷屏禁言的准备
 repeat_message = dict()
 for thisGrpID in setting.group_id():
-    repeat_message[thisGrpID] = dict()
-    repeat_message[thisGrpID]['message'] = ''
-    repeat_message[thisGrpID]['user_id'] = ''
-    repeat_message[thisGrpID]['time'] = 0
+    properties = ['message', 'user_id', 'times']
+    repeat_message[thisGrpID] = {info: '' for info in properties}
 
 
 # 发送集资信息
@@ -65,6 +63,7 @@ def check_new_project():
 
 
 def send_pk_message(pk_data):
+    """发送PK数据信息"""
     message = fund.pk.get_pk_message(pk_data)
     send_groups = setting.group_id() + pk_data['extend_qq_groups']
     for grp_id in send_groups:

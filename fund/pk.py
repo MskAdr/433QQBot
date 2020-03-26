@@ -57,7 +57,7 @@ def get_pk_message(pk_data: dict):
     group_message_dict = dict()
     group_id = 0
     for group in pk_data['pk_groups']:
-        group_msg = ''
+        group_messsage = ''
         group_amount = 0
         result_dict, sorted_list = get_pk_amount(
             group['projects'],
@@ -68,31 +68,31 @@ def get_pk_message(pk_data: dict):
         prev_amount = -1.0
         for info in sorted_list:
             group_amount += info[1]
-            group_msg += '\n  ' + info[0] + ':' + str(result_dict[info[0]])
+            group_messsage += f'\n  {info[0]}:{result_dict[info[0]]}'
             if pk_data['battle_config']['type'] == 'increase':
-                group_msg += '\n   涨幅:' + str(info[1])
+                group_messsage += f'\n   涨幅:{info[1]}'
             if prev_amount >= 0:
-                group_msg += ' ↑' + str(round(prev_amount - info[1], 2))
+                group_messsage += f' ↑{round(prev_amount - info[1], 2)}'
             prev_amount = info[1]
         if pk_data['is_group_battle']:
-            group_message_dict[group_id] = group_msg
+            group_message_dict[group_id] = group_messsage
             group_amount_dict[group_id] = group_amount
             group_id += 1
-        else:
-            message += group_msg
     if pk_data['is_group_battle']:
         sorted_group_amount_list = sorted(group_amount_dict.items(),
                                           key=lambda d: d[1],
                                           reverse=True)
         prev_amount = -1.0
         for info in sorted_group_amount_list:
-            message += '\n ' + group['title']
+            message += f'\n {group["title"]}'
             if pk_data['battle_config']['type'] == 'increase':
                 message += '(涨幅)'
-            message += ':' + str(info[1])
+            message += f':{info[1]}'
             if prev_amount >= 0:
-                message += ' ↑' + str(round(prev_amount - info[1], 2))
+                message += f' ↑{round(prev_amount - info[1], 2)}'
             message += group_message_dict[info[0]]
+    else:
+        message += group_messsage
     return message
 
 

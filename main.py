@@ -7,9 +7,10 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-import setting
 import fund
 import fund.pk
+import pocket48
+import setting
 
 logger = logging.getLogger('QQBot')
 bot = CQHttp(api_root='http://127.0.0.1:5700/')
@@ -92,13 +93,28 @@ def pk_init():
         pk_interval = int(setting.read_config('pk', 'interval'))
         logger.info('对%s项目的PK播报将于%s启动,每%d秒钟一次',
                     pk_data['title'], pk_data['start_time'], pk_interval)
-        sched.add_job(send_pk_message,
-                      'interval',
-                      seconds=pk_interval,
-                      start_date=pk_data['start_time'],
-                      end_date=pk_data['end_time'],
-                      args=[pk_data])
+        sched.add_job(
+            send_pk_message,
+            'interval',
+            seconds=pk_interval,
+            start_date=pk_data['start_time'],
+            end_date=pk_data['end_time'],
+            args=[pk_data]
+        )
         pk_mission_started.append(pk_data['title'])
+
+
+# 发送口袋48消息
+def send_pocket48_message():
+    """发送口袋48信息"""
+    message_list = pocket48.get_messages()
+    message_list.reverse()
+    for message in message_list:
+        for grp_id in setting.group_id():
+            bot.send_group_msg_async(group_id=grp_id,
+                                     message=message,
+                                     auto_escape=False)
+            time.sleep(0.5)
 
 
 @bot.on_message()
@@ -205,16 +221,38 @@ if __name__ == '__main__':
     raise_interval = int(setting.read_config('fund', 'interval'))
     if raise_interval:
         send_raise_message(True)
-        sched.add_job(send_raise_message, 'interval', seconds=raise_interval)
-    # 项目自动添加
+        sched.add_job(
+            send_raise_message,
+            'interval',
+            seconds=raise_interval,
+            misfire_grace_time=raise_interval,
+            coalesce=True
+        )
+    # 集资项目自动添加
     autofind_interval = int(setting.read_config('fund', 'autofind'))
     if autofind_interval:
         check_new_project()
-        sched.add_job(check_new_project, 'interval', seconds=autofind_interval)
+        sched.add_job(
+            check_new_project,
+            'interval',
+            seconds=autofind_interval,
+        )
     # PK项目自动初始化
     pkcheck_interval = int(setting.read_config('pk', 'interval')) / 2
     if pkcheck_interval:
-        sched.add_job(pk_init, 'interval', minutes=pkcheck_interval)
+        sched.add_job(
+            pk_init,
+            'interval',
+            minutes=pkcheck_interval
+        )
+    # 口袋48消息播报
+    pocket48_interval = int(setting.read_config('pokcet48', 'interval'))
+    if pocket48_interval:
+        sched.add_job(
+            send_pocket48_message,
+            'interval',
+            seconds=pocket48_interval
+        )
     # 开始任务执行
     sched.start()
     # Docker虚拟网关地址 172.17.0.1

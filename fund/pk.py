@@ -1,4 +1,4 @@
-# 选择用单独的程序运行，是因为每次PK开始或结束都需要初始化一次任务调度器。
+# 选择用单独的程序运行, 是因为每次PK开始或结束都需要初始化一次任务调度器。
 import pickle
 import logging
 import logging.config

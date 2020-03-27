@@ -154,7 +154,7 @@ class Rank(Base):
                       primary_key=True, nullable=False)
     pro_id = Column(Integer, ForeignKey('Project.pro_id'),
                     primary_key=True, nullable=False)
-    # 集资平台的用户ID，不是数据库当中的用户ID
+    # 集资平台的用户ID, 不是数据库当中的用户ID
     user_id = Column(Integer, primary_key=True, nullable=False)
     amount = Column(Float, nullable=False)
 

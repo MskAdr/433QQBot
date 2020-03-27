@@ -87,7 +87,7 @@ class OwhatProject(Project):
         if self.start_time > int(time.time()):
             self.amount = 0.0
         else:
-            # supportdetail可能不支持所有项目，暂时先通过抓取商品销售情况判断销售总额
+            # supportdetail可能不支持所有项目, 暂时先通过抓取商品销售情况判断销售总额
             ori_amount = self.amount
             data = f'{{"fk_goods_id":"{self.pro_id}"}}'
             response = send_request('shop.price', 'findPricesAndStock', data)
@@ -127,5 +127,5 @@ class OwhatProject(Project):
                                         'findrankingbygoodsid', data)
             else:
                 cleared = True
-        logger.debug('项目%s排名数据拉取成功，共得到%d条排名数据', self.title, len(rank_list))
+        logger.debug('项目%s排名数据拉取成功, 共得到%d条排名数据', self.title, len(rank_list))
         return rank_list

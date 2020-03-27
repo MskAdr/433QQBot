@@ -34,7 +34,7 @@ def project_factory(project: Project) -> Project:
 
 
 def find_new_project(session: Session):
-    """根据设定的应援会账户ID，查找该应援会发布的新项目
+    """根据设定的应援会账户ID, 查找该应援会发布的新项目
     ### Args:
     ``session``: 用于连接数据库的SQLAlchemy线程.\n
     """
@@ -43,7 +43,7 @@ def find_new_project(session: Session):
 
 
 def get_started_project(session: Session) -> List[Project]:
-    """根据设定的应援会账户ID，查找该应援会发布的新项目
+    """根据设定的应援会账户ID, 查找该应援会发布的新项目
     ### Args:
     ``session``: 用于连接数据库的SQLAlchemy线程.\n
     ### Result:
@@ -56,7 +56,7 @@ def get_started_project(session: Session) -> List[Project]:
 
 
 def get_preparing_project(session: Session) -> List[Project]:
-    """根据设定的应援会账户ID，查找该应援会发布的新项目
+    """根据设定的应援会账户ID, 查找该应援会发布的新项目
     ### Args:
     ``session``: 用于连接数据库的SQLAlchemy线程.\n
     ### Result:
@@ -175,7 +175,7 @@ def check_new_order(session: Session, force: bool = False) -> List[str]:
     message_list = list()
     for project in project_list:
         if not project.refresh_detail():
-            # 强制刷新，用于确认遗漏的订单
+            # 强制刷新, 用于确认遗漏的订单
             if not force:
                 logger.info('项目%s未发生更新', project.title)
                 continue
@@ -231,7 +231,7 @@ def check_new_order(session: Session, force: bool = False) -> List[str]:
             pattern = setting.read_config('fund', 'pattern')
             message = pattern.format(**info_dict)
             if order.amount < float(setting.read_config('card', 'threshold')):
-                message += '\n你提供的能量尚不足以推开物资库的大门，再努把力吧！'
+                message += '\n你提供的能量尚不足以推开物资库的大门, 再努把力吧！'
                 message_list.append(message)
                 continue
             message_list.append(message)

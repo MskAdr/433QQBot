@@ -117,7 +117,7 @@ class ModianProject(Project):
         response = requests.get(url, headers=header).text
         response = response[40: -2]
         html_data = json.loads(response)['html']
-        # 获取HTML数据，准备通过BeautifulSoup处理
+        # 获取HTML数据, 准备通过BeautifulSoup处理
         soup = BeautifulSoup(html_data, 'lxml')
         ori_comment = soup.find(name='ul', class_='comment-lists')
         order_list = list()
@@ -158,7 +158,7 @@ class ModianProject(Project):
                 amount=float(amount_str),
                 signature=str(signature.hexdigest())
             ))
-        logger.debug('项目%s评论数据拉取成功，在第%d页共得到%d条评论数据',
+        logger.debug('项目%s评论数据拉取成功, 在第%d页共得到%d条评论数据',
                      self.title, page, len(order_list))
         if len(order_list) == 10:
             return order_list, False
@@ -176,7 +176,7 @@ class ModianProject(Project):
             order_page, cleared = self._get_order(page)
             order_list.extend(order_page)
             page += 1
-        logger.debug('项目%s订单数据拉取成功，共得到%d条订单数据', self.title, len(order_list))
+        logger.debug('项目%s订单数据拉取成功, 共得到%d条订单数据', self.title, len(order_list))
         return order_list
 
     def get_new_orders(self, session: Session,
@@ -213,7 +213,7 @@ class ModianProject(Project):
 
 
 def find_new_modian_project(session: Session):
-    """根据设定的应援会账户ID，查找该应援会发布的新项目
+    """根据设定的应援会账户ID, 查找该应援会发布的新项目
     ### Args:
     ``session``:用于连接数据库的SQLAlchemy线程.\n
     """

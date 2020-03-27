@@ -27,6 +27,7 @@ def write_config(section: str, option: str, value: str) -> str:
     ### Args:
     ``section``: 在conf文件中的段落.\n
     ``option``: 在conf文件中的选项.\n
+    ``value``: 需要写入的值.\n
     """
     with open(FILE_PATH, 'r', encoding='utf-8') as cfgfile:
         cf.read_file(cfgfile)

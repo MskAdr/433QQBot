@@ -6,11 +6,14 @@
 
 ## 说明与感谢  
 基于Docker和酷QHTTP开发而来，在我接手前的原项目基本上是黄子璇应援会机器人项目的fork，在此特别感谢[chinshin/CQBot_hzx](https://github.com/chinshin/CQBot_hzx)  
-目前重构工作尚未完成，由于应援会暂时还不需要，所以暂时还没有完成口袋48和微博的抓取，等待之后补完。  
+同时感谢[richardchien](https://github.com/richardchien)在项目[richardchien/CoolQ HTTP API](https://github.com/richardchien/coolq-http-api)和[richardchien/CQHttp Python SDK](https://github.com/richardchien/cqhttp-python-sdk)上的付出。  
+目前重构工作尚未完成，暂时还没有完成微博的抓取，等待之后补完。  
 另外由于微信小经费不再用于集资，所以放弃开发。
 因为应援会放弃使用owhat平台，所以开发仅完成了获取排名和项目信息的部分，并没有开发获取订单的部分。如果有需要欢迎提出issue。  
 
 ## 更新日志
+### 2020年3月27日更新
+更新了口袋48播报的模块
 ### 2020年3月26日更新
 完全重构，清理了commit记录。现在可以通过模式字符串来自定义订单和抽卡的消息了。  
 同时对抽卡算法进行了修正，当前抽卡的算法如下：  
@@ -46,7 +49,10 @@ $ docker run -ti --rm --name cqhttp-test \
 启动之前需要在项目根目录下创建一个基础的setting.conf配置文件  
 ``` ini
 [system]
+# 偶像名称，初始化口袋48信息时可能会用到
 idolname = 苏杉杉
+# 偶像昵称，在口袋48信息播报时可能会用到
+idolnickname = 杉杉
 idolgroup = bej
 # 数据库保存位置，当前项目使用SQLite3
 database = Database.db
@@ -66,7 +72,7 @@ shutword =
 [fund]
 # 集资播报时间间隔，单位是秒，为0表示不播报
 interval = 20
-# 自动检测集资项目的时间间隔，单位是秒，为0表示不播报
+# 自动检测集资项目的时间间隔，单位是秒，为0表示不检测
 autofind = 1800
 # 播报集资信息的模版，如果有有关其他信息的需求，请自行更改fund/__init__.py
 # title: 项目标题
@@ -118,6 +124,20 @@ cache_folder = pkcache
 config_folder = pkconfig
 # PK项目的列表
 pk_lists = 2020_03_20.json
+
+[pocket48]
+# 口袋48消息播报时间间隔，单位是秒，为0表示不播报
+interval = 20
+# 口袋48房间的roomId和ownerId，可以手动设置，也可以通过init.py自动设置
+roomid = 67362271
+ownerid = 327597
+# 口袋48的用户名，密码和token
+# 如果要获取消息，必须有一个账号才可以，但是对具体的账号没有要求
+username = 13333333333
+password = 333333
+token = none
+# 最后接手消息的时间，初次可以设置为0
+message_time = 0
 ```
 随后执行`python3 init.py`来创建数据库和相关目录。  
 数据库建好之后需要手动添加卡牌信息。  

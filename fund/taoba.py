@@ -64,7 +64,7 @@ def decode(original: str) -> dict:
     source = original.split('$')[1]
     # base64解码
     xored = bytearray(base64.b64decode(source))
-    # 重新进行异或计算，恢复原始结果
+    # 重新进行异或计算, 恢复原始结果
     compressed = add_xor(xored)
     # zlib解压
     result = zlib.decompress(compressed).decode('utf-8')
@@ -119,7 +119,7 @@ def get_signature():
     if response['code'] == 0:
         setting.write_config('taoba', 'signature', response['token'])
     else:
-        logger.error('桃叭登录失败，请检查用户名和密码')
+        logger.error('桃叭登录失败, 请检查用户名和密码')
 
 
 class TaobaProject(Project):
@@ -216,7 +216,7 @@ class TaobaProject(Project):
                                         data)
             else:
                 cleared = True
-        logger.debug('项目%s排名数据拉取成功，共得到%d条排名数据', self.title, len(rank_list))
+        logger.debug('项目%s排名数据拉取成功, 共得到%d条排名数据', self.title, len(rank_list))
         return rank_list
 
     def get_orders(self) -> List[Order]:
@@ -242,7 +242,7 @@ class TaobaProject(Project):
             )
             if response['code'] == 99999:
                 # 请求签名验证失败, 重新获取签名
-                logger.error('请求桃叭签名验证失败, 尝试重新获取签名')
+                logger.warn('请求桃叭签名验证失败, 尝试重新获取签名')
                 get_signature()
                 response = send_request(
                     'https://www.tao-ba.club/idols/refund/orders',
@@ -265,7 +265,7 @@ class TaobaProject(Project):
             if len(response['list']) != 25:
                 cleared = True
             pages += 1
-        logger.debug('项目%s订单数据拉取成功，共得到%d条订单数据', self.title, len(order_list))
+        logger.debug('项目%s订单数据拉取成功, 共得到%d条订单数据', self.title, len(order_list))
         return order_list
 
     def get_new_orders(self, session: Session,
@@ -293,7 +293,7 @@ class TaobaProject(Project):
 
 
 def find_new_taoba_project(session: Session):
-    """根据设定的应援会账户ID，查找该应援会发布的新项目
+    """根据设定的应援会账户ID, 查找该应援会发布的新项目
     ### Args:
     ``session``:用于连接数据库的SQLAlchemy线程.\n
     """
@@ -310,7 +310,7 @@ def find_new_taoba_project(session: Session):
         response = send_request('https://www.tao-ba.club/idols/mine/main',
                                 data)
         if response['code'] == 99999:
-            logger.error('请求桃叭签名验证失败，尝试重新获取签名')
+            logger.warn('请求桃叭签名验证失败, 尝试重新获取签名')
             get_signature()
             data = json.dumps({
                 'limit': 20,
@@ -322,7 +322,7 @@ def find_new_taoba_project(session: Session):
             response = send_request('https://www.tao-ba.club/idols/mine/main',
                                     data)
             if response['code'] == 99999:
-                logger.error('连续失败，请检查用户是否有查看权限')
+                logger.error('连续失败, 请检查用户是否有查看权限')
                 return list()
         for return_project in response['list']:
             if session.query(Project).\

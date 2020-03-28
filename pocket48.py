@@ -121,7 +121,7 @@ def get_messages() -> list:
                             message_ext["text"],
                             message_ext["question"])
             elif message_ext['messageType'] == 'LIVEPUSH':
-                idol_nickname = setting.read_config("system", "idolnickname")
+                idol_nickname = setting.read_config("system", "nickname")
                 # playStreamPath = response['content']['playStreamPath']
                 message = [
                     {

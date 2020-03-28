@@ -11,11 +11,14 @@ import fund
 import fund.pk
 import pocket48
 import setting
+import weibo
 
 logger = logging.getLogger('QQBot')
 bot = CQHttp(api_root='http://127.0.0.1:5700/')
 sched = BackgroundScheduler()
 engine = create_engine(setting.db_link())
+global pk_mission_started
+global repeat_message
 # 列表中保存的是已经完成初始化的PK项目
 pk_mission_started = list()
 # 重复刷屏禁言的准备
@@ -23,6 +26,16 @@ repeat_message = dict()
 for thisGrpID in setting.group_id():
     properties = ['message', 'user_id', 'times']
     repeat_message[thisGrpID] = {info: '' for info in properties}
+
+
+def send_message(message_list: list):
+    """向配置文件当中指定的群群发消息"""
+    for message in message_list:
+        for grp_id in setting.group_id():
+            bot.send_group_msg_async(group_id=grp_id,
+                                     message=message,
+                                     auto_escape=False)
+            time.sleep(0.5)
 
 
 # 发送集资信息
@@ -35,12 +48,7 @@ def send_raise_message(force=False):
         session = sessionmaker(bind=engine)()
         logger.info('开始检查集资信息')
         message_list = fund.check_new_order(session, force)
-        for message in message_list:
-            for grp_id in setting.group_id():
-                bot.send_group_msg_async(group_id=grp_id,
-                                         message=message,
-                                         auto_escape=False)
-                time.sleep(0.5)
+        send_message(message_list)
         session.commit()
     except Exception as e:
         logger.error(str(e), exc_info=True)
@@ -71,6 +79,7 @@ def send_pk_message(pk_data):
         bot.send_group_msg_async(group_id=grp_id,
                                  message=message,
                                  auto_escape=False)
+        time.sleep(0.5)
 
 
 def pk_init():
@@ -107,14 +116,29 @@ def pk_init():
 # 发送口袋48消息
 def send_pocket48_message():
     """发送口袋48信息"""
-    message_list = pocket48.get_messages()
-    message_list.reverse()
-    for message in message_list:
-        for grp_id in setting.group_id():
-            bot.send_group_msg_async(group_id=grp_id,
-                                     message=message,
-                                     auto_escape=False)
-            time.sleep(0.5)
+    try:
+        logger.info('开始检查口袋48消息')
+        message_list = pocket48.get_messages()
+        message_list.reverse()
+        send_message(message_list)
+    except Exception as e:
+        logger.error(str(e), exc_info=True)
+    finally:
+        logger.info('口袋48检查完成')
+
+
+# 发送微博消息
+def send_weibo_message():
+    """发送微博信息"""
+    try:
+        logger.info('开始检查微博消息')
+        message_list = weibo.get_messages()
+        message_list.reverse()
+        send_message(message_list)
+    except Exception as e:
+        logger.error(str(e), exc_info=True)
+    finally:
+        logger.info('微博检查完成')
 
 
 @bot.on_message()
@@ -153,7 +177,8 @@ def handle_msg(context):
                 session.close()
                 bot.send(context, message.rstrip('\n'))
             if context['message'] == '补档':
-                f = open('Links.txt', 'r', -1, 'utf-8')
+                intro_pos = setting.read_config('system', 'intro')
+                f = open(intro_pos, 'r', -1, 'utf-8')
                 ori_message = f.read()
                 message_list = ori_message.split('$')
                 for message in message_list:
@@ -252,6 +277,14 @@ if __name__ == '__main__':
             send_pocket48_message,
             'interval',
             seconds=pocket48_interval
+        )
+    # 微博消息播报
+    weibo_interval = int(setting.read_config('pokcet48', 'interval'))
+    if weibo_interval:
+        sched.add_job(
+            send_weibo_message,
+            'interval',
+            seconds=weibo_interval
         )
     # 开始任务执行
     sched.start()

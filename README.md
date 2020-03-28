@@ -7,11 +7,12 @@
 ## 说明与感谢  
 基于Docker和酷QHTTP开发而来，在我接手前的原项目基本上是黄子璇应援会机器人项目的fork，在此特别感谢[chinshin/CQBot_hzx](https://github.com/chinshin/CQBot_hzx)  
 同时感谢[richardchien](https://github.com/richardchien)在项目[richardchien/CoolQ HTTP API](https://github.com/richardchien/coolq-http-api)和[richardchien/CQHttp Python SDK](https://github.com/richardchien/cqhttp-python-sdk)上的付出。  
-目前重构工作尚未完成，暂时还没有完成微博的抓取，等待之后补完。  
-另外由于微信小经费不再用于集资，所以放弃开发。
+由于微信小经费不再用于集资，所以放弃开发。
 因为应援会放弃使用owhat平台，所以开发仅完成了获取排名和项目信息的部分，并没有开发获取订单的部分。如果有需要欢迎提出issue。  
 
 ## 更新日志
+### 2020年3月28日更新
+更新了微博播报的模块
 ### 2020年3月27日更新
 更新了口袋48播报的模块
 ### 2020年3月26日更新
@@ -49,15 +50,18 @@ $ docker run -ti --rm --name cqhttp-test \
 启动之前需要在项目根目录下创建一个基础的setting.conf配置文件  
 ``` ini
 [system]
-# 偶像名称，初始化口袋48信息时可能会用到
+# 偶像名称，初始化时可能会用到
 idolname = 苏杉杉
-# 偶像昵称，在口袋48信息播报时可能会用到
-idolnickname = 杉杉
+# 偶像昵称，在信息播报时可能会用到
+nickname = 杉杉
 idolgroup = bej
 # 数据库保存位置，当前项目使用SQLite3
 database = Database.db
 # 日志文件保存位置    
 log = log.log
+# 补档和偶像介绍弹出的对应文字
+# 为了防止发言太长，采用$字符进行分割，拆成多段发送
+intro = intro.txt
 
 [QQgroup]
 # 配置用于播报集资信息等的QQ群
@@ -138,6 +142,14 @@ password = 333333
 token = none
 # 最后接手消息的时间，初次可以设置为0
 message_time = 0
+
+[weibo]
+# 微博消息播报时间间隔，单位是秒，为0表示不播报，建议稍长一点避免被微博屏蔽
+interval = 90
+# 小偶像的微博用户id
+id = 5886998602
+# 最后一条微博的id，可以自动生成
+last_weibo = 4485435436742106
 ```
 随后执行`python3 init.py`来创建数据库和相关目录。  
 数据库建好之后需要手动添加卡牌信息。  

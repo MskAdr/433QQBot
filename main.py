@@ -271,7 +271,7 @@ if __name__ == '__main__':
             minutes=pkcheck_interval
         )
     # 口袋48消息播报
-    pocket48_interval = int(setting.read_config('pokcet48', 'interval'))
+    pocket48_interval = int(setting.read_config('pocket48', 'interval'))
     if pocket48_interval:
         sched.add_job(
             send_pocket48_message,
@@ -279,7 +279,7 @@ if __name__ == '__main__':
             seconds=pocket48_interval
         )
     # 微博消息播报
-    weibo_interval = int(setting.read_config('pokcet48', 'interval'))
+    weibo_interval = int(setting.read_config('weibo', 'interval'))
     if weibo_interval:
         sched.add_job(
             send_weibo_message,

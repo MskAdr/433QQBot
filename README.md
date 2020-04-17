@@ -33,6 +33,7 @@
 
 ## 配置方法
 ### 环境配置
+#### Linux & Docker
 在Linux平台下，首先请安装好Docker，然后下载richardchien的基于Docker的镜像。  
 以下内容来自于[Docker说明](https://cqhttp.cc/docs/4.14/#/Docker)
 ``` bash
@@ -48,6 +49,9 @@ $ docker run -ti --rm --name cqhttp-test \
              richardchien/cqhttp:latest
 ```
 随后在主机上安装`python3.8`，将本脚本全部源码传送至相应文件夹，执行`pip3 install -r requirements.txt`安装依赖。  
+#### Windows
+在远程主机上安装酷Q，酷QHTTP插件，`python3.8`。  
+将本脚本全部源码传送至相应文件夹，执行`pip3 install -r requirements.txt`安装依赖。  
 ### 选项和设定
 启动之前需要在项目根目录下创建一个基础的setting.conf配置文件  
 ``` ini
@@ -159,5 +163,8 @@ Linux平台下可以直接执行`sqlite3 Database.db`命令来增加或者修改
 也可以寻找sqlite3可视化工具来添加卡牌信息。  
 如果需要增加PK项目，可以参照pkconfig下的sample与说明：  
 ### 启动
+#### Linux & Docker
 在noVNC设定好酷Q登录的账号后，切换到机器人脚本所在文件夹下，执行`nohup python3 main.py &`命令。  
 确定情况无误后用`exit`退出ssh链接，如果直接关闭可能导致进程退出。  
+#### Windows
+远程桌面的命令行运行`python3 main.py`即可。  

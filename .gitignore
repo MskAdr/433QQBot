@@ -3,7 +3,6 @@
 # Edit at https://www.gitignore.io/?templates=macos,python,visualstudiocode
 
 # 敏感信息与测试
-setting.conf
 Init.py
 Test.py
 test.py
@@ -11,9 +10,7 @@ Log.log
 
 # 辅助资料
 profiles/
-pkcache/
-pkconfig/
-backup_code/
+upload/
 
 # SQLite
 *.db

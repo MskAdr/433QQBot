@@ -1,0 +1,24 @@
+{
+    "title":"森林之王争霸赛",
+    "key_word":["绝地反击","反击"],
+    "extend_qq_groups":[],
+    "is_group_battle": true,
+    "start_time": "2020-04-15 18:00:00",
+    "end_time": "2020-04-15 23:00:00",
+    "battle_config":{
+        "type":"sample"
+    },
+    "pk_groups":[
+        {   "title":"未定组别1",
+            "projects":[
+                {"idol":"孙芮", "platform" : 2, "pro_id" : 2177}
+            ]
+        },
+        {   "title":"未定组别2",
+            "projects":[
+                {"idol":"苏杉杉", "platform" : 2, "pro_id" : 2180},
+                {"idol":"刘令姿", "platform" : 2, "pro_id" : 2182, "multiply" : 1.4}
+            ]
+        }
+    ]
+}

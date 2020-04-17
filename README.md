@@ -127,7 +127,7 @@ cache_folder = pkcache
 # PK配置文件存放文件夹，详细可以看PK配置篇
 config_folder = pkconfig
 # PK项目的列表
-pk_lists = 2020_03_20.json
+pk_lists = sample.json
 
 [pocket48]
 # 口袋48消息播报时间间隔，单位是秒，为0表示不播报
@@ -138,7 +138,7 @@ ownerid = 327597
 # 口袋48的用户名，密码和token
 # 如果要获取消息，必须有一个账号才可以，但是对具体的账号没有要求
 username = 13333333333
-password = 333333
+password = password
 token = none
 # 最后接手消息的时间，初次可以设置为0
 message_time = 0
@@ -155,38 +155,7 @@ last_weibo = 4485435436742106
 数据库建好之后需要手动添加卡牌信息。  
 Linux平台下可以直接执行`sqlite3 Database.db`命令来增加或者修改卡牌数据。  
 也可以寻找sqlite3可视化工具来添加卡牌信息。  
-如果需要增加PK项目，可以参照以下配置在相应的文件夹当中新建一个PK项目：  
-``` Javascript
-{
-    //PK项目的Title
-    "title":"青春有你2-绝地反击",
-    //可以在群内触发机器人回复的关键词
-    "key_word":["绝地反击","反击"],
-    //PK项目如果需要额外在别的群播报，请添加此项
-    "extend_qq_groups":[23252440],
-    //是不是分组PK，还是个人战，分组PK请选择true
-    "is_group_battle":false,
-    //PK起止时间
-    "start_time": "2020-03-23 19:00:00",
-    "end_time": "2020-03-25 19:00:00",
-    //PK类型，目前支持单纯的总额(simple)，和固定时间点后的增量(increase)
-    //如果选择增量模式，需要配置缓存的时间点
-    "battle_config":{
-        "type":"increase",
-        "time_spot":["2020-03-23 19:00:00","2020-03-24 19:00:00"]
-    },
-    //PK的组别，就算个人战也应该配置至少一个组别
-    //platform项，1表示摩点平台，2表示桃叭平台，3表示owhat平台
-    "pk_groups":[
-        {   "title":"未定组别",
-            "projects":[
-                {"idol":"苏杉杉", "platform" : 2, "pro_id" : 1464},
-                {"idol":"宋昕冉", "platform" : 3, "pro_id" : 90746}
-            ]
-        }
-    ]
-}
-```
+如果需要增加PK项目，可以参照pkconfig下的sample与说明：  
 ### 启动
 在noVNC设定好酷Q登录的账号后，切换到机器人脚本所在文件夹下，执行`nohup python3 main.py &`命令。  
 确定情况无误后用`exit`退出ssh链接，如果直接关闭可能导致进程退出。  

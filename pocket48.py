@@ -84,7 +84,8 @@ def get_messages() -> list:
         message_ext = json.loads(data['extInfo'])
         if data['msgType'] == 'TEXT':
             # 口袋48好像会出现换行直接打到行首的特殊情况
-            message_ext['text'] = message_ext['text'].replace('\r', '\n')
+            if 'text' in message_ext:
+                message_ext['text'] = message_ext['text'].replace('\r', '\n')
             if message_ext['messageType'] == 'TEXT':
                 message = (
                     f'{message_ext["user"]["nickName"]}: '

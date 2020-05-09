@@ -20,7 +20,7 @@ def get_message() -> list:
     }
     response = requests.get(url, headers=header).json()
     message_list = list()
-    max_id = 0
+    max_id = int(setting.read_config("weibo", "last_weibo"))
     for card in response['data']['cards']:
         try:
             card_id = int(card['mblog']['id'])

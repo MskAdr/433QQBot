@@ -132,7 +132,7 @@ def send_weibo_message():
     """发送微博信息"""
     try:
         logger.info('开始检查微博消息')
-        message_list = weibo.get_messages()
+        message_list = weibo.get_message()
         message_list.reverse()
         send_message(message_list)
     except Exception as e:

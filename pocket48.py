@@ -114,12 +114,12 @@ def get_messages() -> list:
             elif message_ext['messageType'] == 'FLIPCARD':
                 message = (
                     f'{message_ext["user"]["nickName"]}: '
-                    f'{message_ext["text"]}\n'
+                    f'{message_ext["answer"]}\n'
                     f'问题内容: {message_ext["question"]}\n'
                     f'{message_time}'
                 )
                 logger.info('收到一条翻牌消息: %s, 问题: %s',
-                            message_ext["text"],
+                            message_ext["answer"],
                             message_ext["question"])
             elif message_ext['messageType'] == 'LIVEPUSH':
                 idol_nickname = setting.read_config("system", "nickname")

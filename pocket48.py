@@ -1,5 +1,8 @@
+import base64
+import hashlib
 import json
 import logging
+import random
 import time
 
 import requests
@@ -7,6 +10,15 @@ import requests
 import setting
 
 logger = logging.getLogger('QQBot')
+
+
+def get_pa():
+    timestamp = int(time.time())*1000
+    randomnum = random.randint(1000, 9999)
+    salt = 'K4bMWJawAtnyyTNOa70S'
+    hashstr = hashlib.md5(f'{timestamp}{randomnum}{salt}'.encode('utf-8')).hexdigest()
+    pa = base64.b64encode(f'{timestamp},{randomnum},{hashstr}'.encode('utf-8'))
+    return pa
 
 
 def send_request(url: str, data: dict, has_login: bool = False) -> dict:
@@ -19,15 +31,16 @@ def send_request(url: str, data: dict, has_login: bool = False) -> dict:
     """
     header = {
         'Host': 'pocketapi.48.cn',
-        'accept': '*/*',
+        'Accept': '*/*',
         'Accept-Language': 'zh-Hans-CN;q=1',
-        'User-Agent': 'PocketFans201807/6.0.10 (iPhone; iOS 13.3; Scale/2.00)',
-        'Accept-Encoding': 'gzip, deflate',
-        'appInfo': ('{"vendor":"apple","deviceId":"0","appVersion":"6.0.10",'
-                    '"appBuild":"200120","osVersion":"13.3.1","osType":"ios",'
-                    '"deviceName":"iPhone XS Max","os":"ios"}'),
+        'User-Agent': 'PocketFans201807/6.0.13 (iPhone; iOS 13.5; Scale/3.00)',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'appInfo': ('{"vendor":"apple","deviceId":"0","appVersion":"6.0.13",'
+                    '"appBuild":"200513","osVersion":"13.5.0","osType":"ios",'
+                    '"deviceName":"unknown","os":"ios"}'),
         'Content-Type': 'application/json;charset=utf-8',
-        'Connection': 'keep-alive'
+        'Connection': 'keep-alive',
+        'pa': get_pa()
     }
     if has_login:
         header['token'] = setting.read_config('pocket48', 'token')
@@ -54,6 +67,12 @@ def set_token() -> bool:
 
 
 def get_messages() -> list:
+    owner_id = int(setting.read_config('pocket48', 'ownerid'))
+    room_id = int(setting.read_config('pocket48', 'roomid'))
+    return _deal_messages(owner_id, room_id)
+
+
+def _deal_messages(owner_id: int, room_id: int) -> list:
     """返回口袋48主页面的信息
     ### Result:
     ``message_list``: 格式化的口袋消息列表.
@@ -61,8 +80,8 @@ def get_messages() -> list:
     # 发送请求获取消息列表
     url = "https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/homeowner"
     data = {
-        'ownerId': int(setting.read_config('pocket48', 'ownerid')),
-        'roomId': int(setting.read_config('pocket48', 'roomid'))
+        'ownerId': owner_id,
+        'roomId': room_id
     }
     response = send_request(url, data, True)
     if response['status'] >= 401000:
@@ -114,12 +133,12 @@ def get_messages() -> list:
             elif message_ext['messageType'] == 'FLIPCARD':
                 message = (
                     f'{message_ext["user"]["nickName"]}: '
-                    f'{message_ext["answer"]}\n'
+                    f'{message_ext["text"]}\n'
                     f'问题内容: {message_ext["question"]}\n'
                     f'{message_time}'
                 )
                 logger.info('收到一条翻牌消息: %s, 问题: %s',
-                            message_ext["answer"],
+                            message_ext["text"],
                             message_ext["question"])
             elif message_ext['messageType'] == 'LIVEPUSH':
                 idol_nickname = setting.read_config("system", "nickname")

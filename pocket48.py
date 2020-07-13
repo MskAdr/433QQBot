@@ -45,7 +45,7 @@ def send_request(url: str, data: dict, has_login: bool = False) -> dict:
     if has_login:
         header['token'] = setting.read_config('pocket48', 'token')
     response = requests.post(url, data=json.dumps(data),
-                             headers=header, verify=False).json()
+                             headers=header, verify=False, timeout=15).json()
     return response
 
 
